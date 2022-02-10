@@ -30,6 +30,7 @@ from klvdata.common import bytes_to_int
 
 class KLVParser(object):
     """Return key, value pairs parsed from an SMPTE ST 336 source."""
+
     def __init__(self, source, key_length):
         if isinstance(source, IOBase):
             self.source = source
@@ -52,21 +53,22 @@ class KLVParser(object):
         else:
             # BER Long Form
             length = bytes_to_int(self.__read(byte_length - 128))
-
         value = self.__read(length)
 
         return key, value
 
     def __read(self, size):
         if size == 0:
-            return b''
+            return b""
 
         assert size > 0
 
-        data = self.source.read(size)
+        try:
+            data = self.source.read(size)
+        except OverflowError:
+            return b""
 
         if data:
             return data
         else:
             raise StopIteration
-
