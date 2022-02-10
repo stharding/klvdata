@@ -63,10 +63,10 @@ class KLVParser(object):
 
         assert size > 0
 
-        try:
-            data = self.source.read(size)
-        except OverflowError:
+        if size > 2 ** 32:
             return b""
+
+        data = self.source.read(size)
 
         if data:
             return data
